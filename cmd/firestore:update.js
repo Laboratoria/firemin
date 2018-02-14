@@ -12,18 +12,18 @@ module.exports = (app) => {
 	const infile = path.resolve(app.args.shift());
 	const data = require(infile);
 
-  if (dbPath.isDoc) {
+	if (dbPath.isDoc) {
 		return dbPath.ref.update(data);
 	}
 
-  return Promise.all(Object.keys(data).map(key => dbPath.ref.doc(key).get()))
+	return Promise.all(Object.keys(data).map(key => dbPath.ref.doc(key).get()))
 	  .then((results) => {
-			const batch = throttledBatch(db);
-			results.forEach(snap => {
-				batch[snap.exists ? 'update' : 'set'](snap.ref, data[snap.id]);
-			});
-			return batch.commit();
-		});
+		  const batch = throttledBatch(db);
+		  results.forEach(snap => {
+			  batch[snap.exists ? 'update' : 'set'](snap.ref, data[snap.id]);
+		  });
+		  return batch.commit();
+	  });
 };
 
 

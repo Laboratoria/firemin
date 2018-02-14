@@ -11,15 +11,15 @@ module.exports = (app) => {
 	return dbPath.ref.get()
 	  .then(snap =>
 		  console.log(
-				JSON.stringify(
-					(dbPath.isDoc)
-					  ? snap.data()
-						: snap.docs.reduce((memo, doc) => ({
-							...memo,
-							[doc.id]: doc.data(),
-						}), {})
-				)
-			)
+			  JSON.stringify(
+				  (dbPath.isDoc)
+				    ? snap.data()
+				    : snap.docs.reduce((memo, doc) => ({
+					    ...memo,
+					    [doc.id]: doc.data(),
+				    }), {})
+			  )
+		  )
 	  );
 };
 

@@ -11,7 +11,7 @@ module.exports = (app) => {
 	const infile = path.resolve(app.args.shift());
 	const data = require(infile);
 
-  if (dbPath.isDoc) {
+	if (dbPath.isDoc) {
 		return dbPath.ref.set(data);
 	}
 
@@ -19,10 +19,10 @@ module.exports = (app) => {
 
 	return dbPath.ref.get()
 	  .then(snap => {
-			snap.forEach(doc => {
-				console.log(doc.id);
-			});
-		});
+		  snap.forEach(doc => {
+			  console.log(doc.id);
+		  });
+	  });
 };
 
 
