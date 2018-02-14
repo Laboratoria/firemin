@@ -5,8 +5,7 @@ const { parseDbPath } = require('../lib/util');
 
 
 module.exports = (app) => {
-	const db = app.firebase.firestore();
-	const dbPath = parseDbPath(db, app.args.shift());
+	const dbPath = parseDbPath(app.firebase.firestore(), app.args.shift());
 
 	return dbPath.ref.get()
 	  .then(snap =>

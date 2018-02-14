@@ -11,8 +11,9 @@ const commands = [
   'firestore:get',
   'firestore:set',
   'firestore:update',
-  // 'firestore:import',
-  // 'firestore:export',
+  'firestore:import',
+  'firestore:export',
+  'nuke',
 ].reduce((memo, key) => ({
   ...memo,
   [key]: require(`./cmd/${key}`),
