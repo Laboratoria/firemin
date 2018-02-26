@@ -45,7 +45,9 @@ Global options:
 
 
 const success = (message) => {
-  console.log(message);
+  if (message) {
+    console.log(message);
+  }
   process.exit(0);
 };
 
@@ -78,7 +80,12 @@ if (opts.h || opts.help) {
 }
 
 
-const serviceAccountKeyPath = opts.k || opts.key || process.env.FIREMIN_SERVICE_ACCOUNT_KEY;
+const serviceAccountKeyPath =
+  opts.k
+  || opts.key
+  || process.env.FIREMIN_SERVICE_ACCOUNT_KEY;
+
+
 if (!serviceAccountKeyPath) {
   error('No path to service account key file');
 }
@@ -91,8 +98,5 @@ const firebase = firebaseAdmin.initializeApp({
 
 
 commands[cmdName]({ args, opts, firebase })
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
+  .then(success)
+  .catch(error);
