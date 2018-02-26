@@ -1,16 +1,18 @@
 'use strict';
 
 
-const printDoc = doc =>
-  console.log(JSON.stringify({
-    path: doc.ref.path,
-    id: doc.id,
-    data: doc.data(),
-  })) || Promise.resolve(true);
+const serialize = doc => JSON.stringify({
+  path: doc.ref.path,
+  id: doc.id,
+  data: doc.data(),
+});
+
+
+const printDoc = doc => console.log(doc) || Promise.resolve(true);
 
 
 const backupDoc = doc =>
-  printDoc(doc)
+  printDoc(serialize(doc))
     .then(() => doc.ref.getCollections())
     .then(collections => Promise.all(collections.map(backupCollection)));
 
@@ -26,5 +28,5 @@ module.exports = app =>
 
 
 module.exports.args = [
-  { name: 'outfile', required: true },
+  // { name: 'outfile', required: true },
 ];
