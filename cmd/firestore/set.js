@@ -2,7 +2,7 @@
 
 
 const path = require('path');
-const { parseDbPath } = require('../lib/util');
+const { parseDbPath } = require('../../lib/util');
 
 
 module.exports = (app) => {

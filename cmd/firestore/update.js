@@ -2,8 +2,8 @@
 
 
 const path = require('path');
-const throttledBatch = require('../lib/throttled-batch');
-const { parseDbPath } = require('../lib/util');
+const throttledBatch = require('../../lib/throttled-batch');
+const { parseDbPath } = require('../../lib/util');
 
 
 module.exports = (app) => {

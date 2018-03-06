@@ -1,7 +1,7 @@
 'use strict';
 
 
-const { parseDbPath } = require('../lib/util');
+const { parseDbPath } = require('../../lib/util');
 
 
 module.exports = (app) => {

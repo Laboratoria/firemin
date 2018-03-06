@@ -16,7 +16,7 @@ const commands = [
   'firestore:export',
 ].reduce((memo, key) => ({
   ...memo,
-  [key]: require(`./cmd/${key}`),
+  [key]: require(`./cmd/${key.split(':').join('/')}`),
 }), {});
 
 
