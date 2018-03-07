@@ -27,7 +27,7 @@ module.exports = app => new Promise((resolve, reject) => {
   const db = app.firebase.firestore();
   const infile = path.resolve(app.args.shift());
   const stats = { total: 0, errors: [] };
-  const batch = throttledBatch(db);
+  const batch = throttledBatch(db, { batchSize: 250 });
   const rl = readline.createInterface({
     input: fs.createReadStream(infile),
     crlfDelay: Infinity,
@@ -38,8 +38,7 @@ module.exports = app => new Promise((resolve, reject) => {
     try {
       const json = JSON.parse(line);
       ensureValidEntry(json);
-      console.log(Object.keys(json));
-      // batch[snap.exists ? 'update' : 'set'](snap.ref, data[snap.id]);
+      batch.set(db.doc(json.path), json.data);
     } catch (err) {
       stats.errors.push(err);
     }
@@ -47,7 +46,7 @@ module.exports = app => new Promise((resolve, reject) => {
 
   rl.on('close', () => {
     console.log(stats.total, stats.errors.length);
-    resolve(true);
+    batch.commit().then(resolve).catch(reject);
   });
 });
 

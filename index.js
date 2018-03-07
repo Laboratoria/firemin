@@ -53,7 +53,7 @@ const success = (message) => {
 
 
 const error = (err) => {
-  console.error(err.message || err);
+  console.error(err);
   console.error(`Try "${pkg.name} --help" to see available commands and options`);
   process.exit(1);
 };
