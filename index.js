@@ -46,7 +46,7 @@ Global options:
 
 const success = (message) => {
   if (message) {
-    console.log(message);
+    console.log('success', message);
   }
   process.exit(0);
 };
