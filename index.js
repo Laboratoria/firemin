@@ -8,6 +8,7 @@ const pkg = require('./package.json');
 
 
 const commands = [
+  'auth:nuke',
   'firestore:get',
   'firestore:set',
   'firestore:update',
@@ -21,7 +22,13 @@ const commands = [
 
 
 const help = `
-Usage: ${pkg.name} <command> [options]
+Usage: ${pkg.name} [options] [command]
+
+Options:
+
+  -k, --key [path]  Path to service account key
+  -h, --help        Show help
+  -v, --version     Show version
 
 Commands:
 
@@ -35,18 +42,12 @@ ${Object.keys(commands)
         }`
     )
     .join('\n')}
-
-Global options:
-
-  -k, --key [path]  Path to service account key
-  -h, --help        Show help
-  -v, --version     Show version
 `;
 
 
 const success = (message) => {
   if (message) {
-    console.log('success', message);
+    console.log(message);
   }
   process.exit(0);
 };
@@ -97,6 +98,6 @@ const firebase = firebaseAdmin.initializeApp({
 });
 
 
-commands[cmdName]({ args, opts, firebase })
+commands[cmdName]({ args, opts, firebase, serviceAccountKey })
   .then(success)
   .catch(error);
