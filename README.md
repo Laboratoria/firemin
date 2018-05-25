@@ -71,10 +71,10 @@ Commands:
 ### Backup / restore
 
 ````sh
-# Exports base de datos
-firemin firestore:export db.dump
+# Export firestore data
+firemin firestore:export > db.dump
 
-# Importa base de datos
+# Import firestore data
 firemin firestore:import db.dump
 ````
 
