@@ -2,39 +2,24 @@
 
 
 const path = require('path');
+const pact = require('pact');
+const ProgressBar = require('progress');
 const confirm = require('../../lib/confirm');
-const pact = require('../../lib/pact');
 
 
-const printStats = (users, stats) => {
+
+const printStats = (users, results) => {
   console.log('Stats\n=====');
-  console.log('Total processed:', stats.total);
-  console.log('Concurrency', stats.concurrency);
-  console.log('Interval between batches:', stats.concurrency);
-  console.log('Batches:', stats.batches);
+  console.log('Total processed:', users.length);
+  console.log('Success:', results.success);
+  console.log('Failures:', results.errors.length);
 
-  const { error, success } = stats.results.reduce(
-    (memo, result, idx) =>
-      (result instanceof Error)
-        ? {
-          ...memo,
-          error: memo.error.concat({
-            message: result.message,
-            user: users[idx],
-          }),
-        }
-        : {
-          ...memo,
-          success: memo.success.concat(result),
-        },
-    { error: [], success: [] }
-  );
-
-  console.log('Success:', success.length);
-  console.log('Failures:', error.length);
-
-  console.log('\nFailed deletions\n================');
-  error.forEach(({ user, message }) => console.log(`${user.email}: ${message}`));
+  if (results.errors.length) {
+    console.log('\nFailed deletions\n================');
+    results.errors.forEach((data) => {
+      console.error(users[data.idx].localId, users[data.idx].email, data.result.message);
+    });
+  }
 };
 
 
@@ -53,11 +38,31 @@ module.exports = (app) => {
     }
 
     const tasks = users.map(user => () => auth.deleteUser(user.localId));
-    // const tasks = users.map(user => () => auth.getUser(user.localId));
+
+    const bar = new ProgressBar('[:bar] :current/:total :rate/s :percent :etas', {
+      width: 50,
+      total: users.length,
+    });
 
     // Throttle requests to under 10 per second to avoid exceeding quota.
     // https://firebase.google.com/docs/auth/limits
-    return pact(tasks, 5, false, 1000).then(printStats.bind(null, users));
+    return new Promise((resolve, reject) => {
+      const results = { success: 0, errors: [] };
+      pact.createStream(tasks, 10, 1000, false)
+        .on('data', (data) => {
+          bar.tick();
+          Object.assign(
+            results,
+            (data.result instanceof Error)
+              ? { errors: [...results.errors, data] }
+              : { success: results.success + 1 }
+          );
+        })
+        .on('end', () => {
+          printStats(users, results);
+          resolve();
+        });
+    });
   });
 };
 

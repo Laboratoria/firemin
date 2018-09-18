@@ -1,4 +1,5 @@
 .DS_Store
 *.swp
 *.log
+package-lock.json
 node_modules/

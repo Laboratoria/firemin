@@ -98,6 +98,9 @@ const firebase = firebaseAdmin.initializeApp({
 });
 
 
+firebase.firestore().settings({ timestampsInSnapshots: true });
+
+
 commands[cmdName]({ args, opts, firebase, serviceAccountKey })
   .then(success)
   .catch(error);
