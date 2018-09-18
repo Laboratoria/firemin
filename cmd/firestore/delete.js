@@ -1,7 +1,3 @@
-'use strict';
-
-
-const path = require('path');
 const { parseDbPath } = require('../../lib/util');
 
 
@@ -12,7 +8,7 @@ module.exports = (app) => {
     return dbPath.ref.delete();
   }
 
-  return Promise.reject('Can not delete collection (only docs)');
+  return Promise.reject(new Error('Can not delete collection (only docs)'));
 };
 
 

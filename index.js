@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-'use strict';
 
 
 const minimist = require('minimist');
@@ -34,12 +33,11 @@ Commands:
 
 ${Object.keys(commands)
     .map(
-      cmdName =>
-        `  ${cmdName} ${
-          commands[cmdName].args
-            .map(arg => arg.required ? `<${arg.name}>` : `[${arg.name}]`)
-            .join(' ')
-        }`
+      cmdName => `  ${cmdName} ${
+        commands[cmdName].args
+          .map(arg => (arg.required ? `<${arg.name}>` : `[${arg.name}]`))
+          .join(' ')
+      }`,
     )
     .join('\n')}
 `;
@@ -72,7 +70,7 @@ if (!cmdName) {
   success(help);
 }
 
-if (!commands.hasOwnProperty(cmdName)) {
+if (!Object.prototype.hasOwnProperty.call(commands, cmdName)) {
   error('Unkown command');
 }
 
@@ -81,10 +79,11 @@ if (opts.h || opts.help) {
 }
 
 
-const serviceAccountKeyPath =
+const serviceAccountKeyPath = (
   opts.k
   || opts.key
-  || process.env.FIREMIN_SERVICE_ACCOUNT_KEY;
+  || process.env.FIREMIN_SERVICE_ACCOUNT_KEY
+);
 
 
 if (!serviceAccountKeyPath) {
@@ -94,13 +93,18 @@ if (!serviceAccountKeyPath) {
 const serviceAccountKey = require(serviceAccountKeyPath);
 const firebase = firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccountKey),
-  databaseURL: `https://${serviceAccountKey.project_id}.firebaseio.com`
+  databaseURL: `https://${serviceAccountKey.project_id}.firebaseio.com`,
 });
 
 
 firebase.firestore().settings({ timestampsInSnapshots: true });
 
 
-commands[cmdName]({ args, opts, firebase, serviceAccountKey })
+commands[cmdName]({
+  args,
+  opts,
+  firebase,
+  serviceAccountKey,
+})
   .then(success)
   .catch(error);

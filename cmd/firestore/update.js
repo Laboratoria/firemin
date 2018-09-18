@@ -1,6 +1,3 @@
-'use strict';
-
-
 const path = require('path');
 const throttledBatch = require('../../lib/throttled-batch');
 const { parseDbPath } = require('../../lib/util');
@@ -19,7 +16,7 @@ module.exports = (app) => {
   return Promise.all(Object.keys(data).map(key => dbPath.ref.doc(key).get()))
     .then((results) => {
       const batch = throttledBatch(db);
-      results.forEach(snap => {
+      results.forEach((snap) => {
         batch[snap.exists ? 'update' : 'set'](snap.ref, data[snap.id]);
       });
       return batch.commit();

@@ -1,11 +1,7 @@
-'use strict';
-
-
 const path = require('path');
 const pact = require('pact');
 const ProgressBar = require('progress');
 const confirm = require('../../lib/confirm');
-
 
 
 const printStats = (users, results) => {
@@ -26,15 +22,14 @@ const printStats = (users, results) => {
 module.exports = (app) => {
   const projectId = app.serviceAccountKey.project_id;
   const { users } = require(path.resolve(app.args.shift()));
-  const db = app.firebase.firestore();
   const auth = app.firebase.auth();
 
   return confirm({
-    text: `You are trying to delete ${users.length} from ${projectId}. Are you sure?`
+    text: `You are trying to delete ${users.length} from ${projectId}. Are you sure?`,
   }).then((confirmed) => {
     if (!confirmed) {
       console.log('Operation cancelled. Nothing done.');
-      return;
+      return false;
     }
 
     const tasks = users.map(user => () => auth.deleteUser(user.localId));
@@ -46,7 +41,7 @@ module.exports = (app) => {
 
     // Throttle requests to under 10 per second to avoid exceeding quota.
     // https://firebase.google.com/docs/auth/limits
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const results = { success: 0, errors: [] };
       pact.createStream(tasks, 10, 1000, false)
         .on('data', (data) => {
@@ -55,7 +50,7 @@ module.exports = (app) => {
             results,
             (data.result instanceof Error)
               ? { errors: [...results.errors, data] }
-              : { success: results.success + 1 }
+              : { success: results.success + 1 },
           );
         })
         .on('end', () => {
