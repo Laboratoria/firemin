@@ -97,9 +97,6 @@ const firebase = firebaseAdmin.initializeApp({
 });
 
 
-firebase.firestore().settings({ timestampsInSnapshots: true });
-
-
 commands[cmdName]({
   args,
   opts,
