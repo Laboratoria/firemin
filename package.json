@@ -11,15 +11,15 @@
     "test": "jest --coverage"
   },
   "dependencies": {
-    "firebase-admin": "^6.0.0",
+    "firebase-admin": "^7.0.0",
     "minimist": "^1.2.0",
     "pact": "lupomontero/pact#v1.0.0",
-    "progress": "^2.0.0"
+    "progress": "^2.0.3"
   },
   "devDependencies": {
-    "eslint": "^5.6.0",
+    "eslint": "^5.13.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "jest": "^23.6.0"
+    "eslint-plugin-import": "^2.16.0",
+    "jest": "^24.1.0"
   }
 }
