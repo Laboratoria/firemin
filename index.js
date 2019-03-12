@@ -34,7 +34,7 @@ Commands:
 ${Object.keys(commands)
     .map(
       cmdName => `  ${cmdName} ${
-        commands[cmdName].args
+        (commands[cmdName].args || [])
           .map(arg => (arg.required ? `<${arg.name}>` : `[${arg.name}]`))
           .join(' ')
       }`,

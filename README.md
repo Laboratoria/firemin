@@ -56,7 +56,7 @@ Options:
 
 Commands:
 
-  auth:nuke <auth-json>
+  auth:nuke
   firestore:get <path>
   firestore:set <path> [infile]
   firestore:update <path> [infile]
@@ -81,10 +81,5 @@ firemin firestore:import db.dump
 ### Nuke/delete all users
 
 ```sh
-# First we need to export all the users from the project
-firebase auth:export auth.json
-
-# Now we can use the exported users from the previous step to
-# delete all users from firebase.
-firemin auth:nuke ./auth.json
+firemin auth:nuke
 ```

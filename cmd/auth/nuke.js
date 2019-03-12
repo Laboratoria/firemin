@@ -19,49 +19,61 @@ const printStats = (users, results) => {
 };
 
 
+const getUsers = (auth, nextPageToken) => (
+  auth.listUsers(1000, nextPageToken)
+    .then(({ users, pageToken }) => ({
+      users: users.map(userRecord => userRecord.toJSON()),
+      pageToken,
+    }))
+    .then(({ users, pageToken }) => (
+      (!pageToken)
+        ? users
+        : getUsers(auth, pageToken).then(nextUsers => [...users, ...nextUsers])
+    ))
+);
+
+
 module.exports = (app) => {
   const projectId = app.serviceAccountKey.project_id;
-  const { users } = require(path.resolve(app.args.shift()));
   const auth = app.firebase.auth();
 
-  return confirm({
-    text: `You are trying to delete ${users.length} from ${projectId}. Are you sure?`,
-  }).then((confirmed) => {
-    if (!confirmed) {
-      console.log('Operation cancelled. Nothing done.');
-      return false;
-    }
+  return getUsers(auth)
+    .then(
+      users => confirm({
+        text: `You are trying to delete ${users.length} users from ${projectId}. Are you sure?`,
+      })
+        .then(confirmed => ({ confirmed, users }))
+    )
+    .then(({ users, confirmed }) => {
+      if (!confirmed) {
+        console.log('Operation cancelled. Nothing done.');
+        return false;
+      }
 
-    const tasks = users.map(user => () => auth.deleteUser(user.localId));
+      const tasks = users.map(user => () => auth.deleteUser(user.uid));
+      const bar = new ProgressBar('[:bar] :current/:total :rate/s :percent :etas', {
+        width: 50,
+        total: users.length,
+      });
 
-    const bar = new ProgressBar('[:bar] :current/:total :rate/s :percent :etas', {
-      width: 50,
-      total: users.length,
-    });
-
-    // Throttle requests to under 10 per second to avoid exceeding quota.
-    // https://firebase.google.com/docs/auth/limits
-    return new Promise((resolve) => {
-      const results = { success: 0, errors: [] };
-      pact.createStream(tasks, 10, 1000, false)
-        .on('data', (data) => {
-          bar.tick();
-          Object.assign(
-            results,
-            (data.result instanceof Error)
-              ? { errors: [...results.errors, data] }
-              : { success: results.success + 1 },
-          );
-        })
-        .on('end', () => {
-          printStats(users, results);
-          resolve();
-        });
+      // Throttle requests to under 10 per second to avoid exceeding quota.
+      // https://firebase.google.com/docs/auth/limits
+      return new Promise((resolve) => {
+        const results = { success: 0, errors: [] };
+        pact.createStream(tasks, 10, 1000, false)
+          .on('data', (data) => {
+            bar.tick();
+            Object.assign(
+              results,
+              (data.result instanceof Error)
+                ? { errors: [...results.errors, data] }
+                : { success: results.success + 1 },
+            );
+          })
+          .on('end', () => {
+            printStats(users, results);
+            resolve();
+          });
     });
   });
 };
-
-
-module.exports.args = [
-  { name: 'auth-json', required: true },
-];
