@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 
+const path = require('path');
 const minimist = require('minimist');
 const firebaseAdmin = require('firebase-admin');
 const pkg = require('./package.json');
@@ -90,7 +91,7 @@ if (!serviceAccountKeyPath) {
   error('No path to service account key file');
 }
 
-const serviceAccountKey = require(serviceAccountKeyPath);
+const serviceAccountKey = require(path.resolve(serviceAccountKeyPath));
 const firebase = firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccountKey),
   databaseURL: `https://${serviceAccountKey.project_id}.firebaseio.com`,
