@@ -1,4 +1,3 @@
-const path = require('path');
 const pact = require('pact');
 const ProgressBar = require('progress');
 const confirm = require('../../lib/confirm');
@@ -42,7 +41,7 @@ module.exports = (app) => {
       users => confirm({
         text: `You are trying to delete ${users.length} users from ${projectId}. Are you sure?`,
       })
-        .then(confirmed => ({ confirmed, users }))
+        .then(confirmed => ({ confirmed, users })),
     )
     .then(({ users, confirmed }) => {
       if (!confirmed) {
@@ -74,6 +73,6 @@ module.exports = (app) => {
             printStats(users, results);
             resolve();
           });
+      });
     });
-  });
 };
