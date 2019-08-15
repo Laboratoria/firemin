@@ -1,5 +1,5 @@
 const path = require('path');
-const pact = require('pact');
+const porch = require('porch');
 const { parseDbPath } = require('../../lib/util');
 
 
@@ -15,12 +15,12 @@ module.exports = (app) => {
 
   const getTasks = Object.keys(data).map(key => () => dbPath.ref.doc(key).get());
 
-  return pact(getTasks, 1000, 500)
+  return porch(getTasks, 1000, 500)
     .then((getResults) => {
       const updateTasks = getResults.map(
         snap => () => snap.ref[snap.exists ? 'update' : 'set'](data[snap.id]),
       );
-      return pact(updateTasks, 20, 500, false);
+      return porch(updateTasks, 20, 500, false);
     })
     .then((updateResults) => {
       console.log('updateResults', updateResults);

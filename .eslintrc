@@ -1,6 +1,7 @@
 {
   "extends": "airbnb-base",
   "rules": {
+    "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
     "global-require": "off",
     "import/no-dynamic-require": "off"
   }

@@ -1,4 +1,4 @@
-const pact = require('pact');
+const porch = require('porch');
 const ProgressBar = require('progress');
 const confirm = require('../../lib/confirm');
 
@@ -59,7 +59,7 @@ module.exports = (app) => {
       // https://firebase.google.com/docs/auth/limits
       return new Promise((resolve) => {
         const results = { success: 0, errors: [] };
-        pact.createStream(tasks, 10, 1000, false)
+        porch.createStream(tasks, 10, 1000, false)
           .on('data', (data) => {
             bar.tick();
             Object.assign(
