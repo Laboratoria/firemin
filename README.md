@@ -1,5 +1,7 @@
 # Firemin
 
+:warning: WARNING: This module has been DEPRECATED and is no longer supported.
+
 ## Installation
 
 ```sh
